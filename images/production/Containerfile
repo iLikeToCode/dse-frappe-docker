@@ -127,13 +127,13 @@ WORKDIR /home/frappe/frappe-bench
 
 RUN bench get-app --branch=${ERPNEXT_BRANCH} --resolve-deps erpnext ${ERPNEXT_REPO}
 RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/hrms
-RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/lms
-RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/education
-RUN bench get-app https://github.com/frappe/wiki
+RUN bench get-app --branch=v2.33.0 https://github.com/frappe/lms
+RUN bench get-app --branch=v15.5.3 https://github.com/frappe/education
+RUN bench get-app --branch=v2.0.1 https://github.com/frappe/wiki
 RUN bench get-app https://github.com/frappe/newsletter
 RUN bench get-app https://github.com/frappe/payments
 RUN bench get-app --branch=v1.19.0 https://github.com/frappe/builder
-RUN bench get-app https://github.com/The-Commit-Company/Raven
+RUN bench get-app --branch=v2.6.2 https://github.com/The-Commit-Company/Raven
 RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/webshop
 RUN bench get-app https://github.com/NagariaHussain/tldraw_whiteboard
 
