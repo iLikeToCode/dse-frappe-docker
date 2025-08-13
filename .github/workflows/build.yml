@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     permissions:
       contents: read
       packages: write
@@ -36,6 +36,6 @@ jobs:
         with:
           push: true
           platforms: linux/arm64
-          tags: ghcr.io/iLikeToCode/erpnext:latest
+          tags: ghcr.io/iliketocode/erpnext:latest
           context: .
           file: images/production/Containerfile
