@@ -129,7 +129,7 @@ RUN bench get-app --branch=${ERPNEXT_BRANCH} --resolve-deps erpnext ${ERPNEXT_RE
 RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/hrms
 RUN bench get-app --branch=v2.33.0 https://github.com/frappe/lms
 RUN bench get-app --branch=v15.5.3 https://github.com/frappe/education
-RUN bench get-app --branch=v2.0.1 https://github.com/frappe/wiki
+RUN bench get-app https://github.com/frappe/wiki
 RUN bench get-app https://github.com/frappe/newsletter
 RUN bench get-app https://github.com/frappe/payments
 RUN bench get-app --branch=v1.19.0 https://github.com/frappe/builder
