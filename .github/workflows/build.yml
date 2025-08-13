@@ -8,18 +8,13 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Set up QEMU for ARM
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: linux/arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
