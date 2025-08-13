@@ -27,9 +27,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push with Docker Bake
-  	uses: docker/bake-action@v4
- 	with:
-    	  push: true
-    	  files: ./docker-bake.hcl
-    	  targets: erpnext
-
+        uses: docker/bake-action@v4
+        with:
+          push: true
+          files: ./docker-bake.hcl
+          targets: erpnext
