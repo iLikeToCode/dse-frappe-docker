@@ -2,7 +2,7 @@
 # Reference: https://github.com/docker/buildx/blob/master/docs/reference/buildx_bake.md
 
 variable "REGISTRY_USER" {
-    default = "frappe"
+    default = "iLikeToCode"
 }
 
 variable PYTHON_VERSION {
@@ -45,8 +45,8 @@ target "bench" {
     context = "images/bench"
     target = "bench"
     tags = [
-        "frappe/bench:${LATEST_BENCH_RELEASE}",
-        "frappe/bench:latest",
+        "iLikeToCode/bench:${LATEST_BENCH_RELEASE}",
+        "iLikeToCode/bench:latest",
     ]
 }
 
