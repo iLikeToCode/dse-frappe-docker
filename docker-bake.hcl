@@ -2,7 +2,7 @@
 # Reference: https://github.com/docker/buildx/blob/master/docs/reference/buildx_bake.md
 
 variable "REGISTRY_USER" {
-    default = "iLikeToCode"
+    default = "ghcr.io/iliketocode"
 }
 
 variable PYTHON_VERSION {
@@ -45,8 +45,8 @@ target "bench" {
     context = "images/bench"
     target = "bench"
     tags = [
-        "iLikeToCode/bench:${LATEST_BENCH_RELEASE}",
-        "iLikeToCode/bench:latest",
+        "ghcr.io/iliketocode/bench:${LATEST_BENCH_RELEASE}",
+        "ghcr.io/iliketocode/bench:latest",
     ]
 }
 

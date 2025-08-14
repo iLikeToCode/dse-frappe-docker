@@ -26,11 +26,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push ARM64 image
-        uses: docker/build-push-action@v5
+      - name: Build and push with Docker Bake
+        uses: docker/bake-action@v6
         with:
           push: true
-          platforms: linux/arm64
-          tags: ghcr.io/iliketocode/erpnext:latest
-          context: .
-          file: images/production/Containerfile
+          files: ./docker-bake.hcl
+          targets: erpnext
