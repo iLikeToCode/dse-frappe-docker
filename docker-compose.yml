@@ -1,0 +1,146 @@
+x-: |
+  Author: https://github.com/5P5
+  pwd.yml (c) 2025
+  Desc: https://github.com/frappe/frappe_docker
+  Created:  2025-07-18T03:01:30.365Z
+  Modified: !date!
+
+name: frappe_docker
+
+volumes:
+  db-data:
+  redis-queue-data:
+  sites:
+  logs:
+
+x-frappe: &frappe
+  image: ${FRAPPE:-frappe/erpnext:${ERPNEXT_VERSION:-v15.70.2}}
+  restart: on-failure
+  volumes:
+  - sites:/home/frappe/frappe-bench/sites
+  - logs:/home/frappe/frappe-bench/logs
+  - /etc/timezone:/etc/timezone:ro
+  - /etc/localtime:/etc/localtime:ro
+
+x-redis: &redis
+  image: ${REDIS:-redis:8-alpine}
+  restart: on-failure
+
+x-DB-root-password: &0 ${DB_PASSWORD:-root}
+x-DB: &DB
+  DB_HOST: ${DB_HOST:-db}
+  DB_PORT: ${DB_PORT:-3306}
+  DB_ROOT_USER: ${DB_USER:-root}
+  DB_ROOT_PASSWORD: *0
+  MYSQL_ROOT_PASSWORD: *0
+  MARIADB_ROOT_PASSWORD: *0
+  POSTGRES_PASSWORD: *0
+
+services:
+  db:
+    image: ${DATABASE:-mariadb:10.8}
+    restart: on-failure
+    environment: *DB
+    healthcheck:
+      test: mariadb-admin ping --password=$$DB_ROOT_PASSWORD
+      interval: 1m
+      retries: 3
+      start_period: 30s
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-character-set-client-handshake
+      --skip-innodb-read-only-compressed
+# Temporary fix for MariaDB 10.6
+    volumes:
+    - db-data:/var/lib/mysql
+
+  redis-cache:
+    <<: *redis
+
+  redis-queue:
+    <<: *redis
+    volumes:
+    - redis-queue-data:/data
+
+  backend:
+    <<: *frappe
+
+  websocket:
+    <<: *frappe
+    depends_on:
+    - redis-cache
+    command: node /home/frappe/frappe-bench/apps/frappe/socketio.js
+
+  frontend:
+    <<: *frappe
+    depends_on:
+    - backend
+    - websocket
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: $$http_x_frappe_site_name
+      SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: ${UPSTREAM_REAL_IP_ADDRESS:-127.0.0.1}
+      UPSTREAM_REAL_IP_HEADER: ${UPSTREAM_REAL_IP_HEADER:-X-Forwarded-For}
+      UPSTREAM_REAL_IP_RECURSIVE: ${UPSTREAM_REAL_IP_RECURSIVE:-off}
+      PROXY_READ_TIMEOUT: ${PROXY_READ_TIMEOUT:-120}
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-50m}
+    command: nginx-entrypoint.sh
+    ports:
+    - ${HTTP_PUBLISH_PORT:-8080}:8080
+
+  scheduler:
+    <<: *frappe
+    command: bench schedule
+
+  queue-long:
+    <<: *frappe
+    depends_on:
+    - redis-queue
+    command: bench worker --queue long,default,short
+
+  queue-short:
+    <<: *frappe
+    depends_on:
+    - redis-queue
+    command: bench worker --queue short,default
+
+  configurator:
+    <<: *frappe
+    environment:
+      <<: *DB
+      REDIS_CACHE: ${REDIS_CACHE:-redis-cache:6379}
+      REDIS_QUEUE: ${REDIS_QUEUE:-redis-queue:6379}
+      SOCKETIO_PORT: 9000
+    entrypoint: bash -c
+    command:
+    - |
+      ls -1 apps > sites/apps.txt
+      bench set-config -g db_host $$DB_HOST
+      bench set-config -g db_port $$DB_PORT
+      bench set-config -g redis_cache "redis://$$REDIS_CACHE"
+      bench set-config -g redis_queue "redis://$$REDIS_QUEUE"
+      bench set-config -g redis_socketio "redis://$$REDIS_QUEUE"
+      bench set-config -g socketio_port $$SOCKETIO_PORT
+
+  create-site:
+    <<: *frappe
+    depends_on:
+      db: { condition: service_healthy }
+      redis-cache: { condition: service_started }
+      redis-queue: { condition: service_started }
+      configurator: { condition: service_completed_successfully }
+    restart: no
+    environment: *DB
+    entrypoint: bash -c
+    command:
+    - >
+      bench new-site
+      --mariadb-user-host-login-scope='%'
+      --admin-password=${ADMIN_PASSWORD:-admin}
+      --db-root-username=$$DB_ROOT_USER
+      --db-root-password=$$DB_ROOT_PASSWORD
+      --install-app erpnext
+      --set-default
+      frontend
