@@ -45,8 +45,8 @@ target "bench" {
     context = "images/bench"
     target = "bench"
     tags = [
-        "iLikeToCode/bench:${LATEST_BENCH_RELEASE}",
-        "iLikeToCode/bench:latest",
+        "ghcr.io/iLikeToCode/bench:${LATEST_BENCH_RELEASE}",
+        "ghcr.io/iLikeToCode/bench:latest",
     ]
 }
 
@@ -66,7 +66,7 @@ function "tag" {
     params = [repo, version]
     result = [
       # Push frappe or erpnext branch as tag
-      "${REGISTRY_USER}/${repo}:${version}",
+      "ghcr.io/${REGISTRY_USER}/${repo}:${version}",
       # If `version` param is develop (development build) then use tag `latest`
       "${version}" == "develop" ? "${REGISTRY_USER}/${repo}:latest" : "${REGISTRY_USER}/${repo}:${version}",
       # Make short tag for major version if possible. For example, from v13.16.0 make v13.
