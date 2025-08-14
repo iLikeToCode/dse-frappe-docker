@@ -2,7 +2,7 @@
 # Reference: https://github.com/docker/buildx/blob/master/docs/reference/buildx_bake.md
 
 variable "REGISTRY_USER" {
-    default = "iLikeToCode"
+    default = "ghcr.io/iliketocode"
 }
 
 variable PYTHON_VERSION {
@@ -45,8 +45,8 @@ target "bench" {
     context = "images/bench"
     target = "bench"
     tags = [
-        "ghcr.io/iLikeToCode/bench:${LATEST_BENCH_RELEASE}",
-        "ghcr.io/iLikeToCode/bench:latest",
+        "ghcr.io/iliketocode/bench:${LATEST_BENCH_RELEASE}",
+        "ghcr.io/iliketocode/bench:latest",
     ]
 }
 
@@ -66,7 +66,7 @@ function "tag" {
     params = [repo, version]
     result = [
       # Push frappe or erpnext branch as tag
-      "ghcr.io/${REGISTRY_USER}/${repo}:${version}",
+      "${REGISTRY_USER}/${repo}:${version}",
       # If `version` param is develop (development build) then use tag `latest`
       "${version}" == "develop" ? "${REGISTRY_USER}/${repo}:latest" : "${REGISTRY_USER}/${repo}:${version}",
       # Make short tag for major version if possible. For example, from v13.16.0 make v13.
