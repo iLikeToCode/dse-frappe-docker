@@ -1,3 +1,2 @@
-docker compose -f pwd.yml down --remove-orphans
-#docker buildx bake --no-cache --set "*.platform=linux/arm64"
-docker compose -f pwd.yml up -d
+docker compose down --remove-orphans
+docker compose up --pull always -d
