@@ -136,6 +136,7 @@ RUN bench get-app --branch=v1.19.0 https://github.com/frappe/builder
 RUN bench get-app --branch=v2.6.2 https://github.com/The-Commit-Company/Raven
 RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/frappe/webshop
 RUN bench get-app https://github.com/NagariaHussain/tldraw_whiteboard
+RUN bench get-app --branch=${ERPNEXT_BRANCH} https://github.com/navariltd/nl-attendance-timesheet.git
 
 RUN echo "{}" > sites/common_site_config.json
 RUN find apps -mindepth 1 -path "*/.git" | xargs rm -fr
